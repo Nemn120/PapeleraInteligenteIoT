@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sensor Ultrasonico</title>
+    <script type="text/javascript">
+        // Connect to the socket. Same URL, port 81.
+        var Socket = new WebSocket('ws://' + window.location.hostname + ':81');
+        //Recibe datos
+        Socket.onmessage = function(evt) {
+            var distancia = parseInt(evt.data);
+            document.getElementById("estado").innerHTML = "Papelera : " + distancia + " % vacio";
+        };
+
+        //Enviar datos
+        var lastSend = 0;
+
+        function enviarDatos() {
+            dato = 0;
+            c = document.getElementById('check');
+            if (c.checked == true) {
+                dato = 1;
+                document.getElementById("foco").innerHTML = "<b>ENCENDIDO</b>";
+            } else {
+                dato = 0;
+                document.getElementById("foco").innerHTML = "APAGADO";
+            }
+
+            var now = (new Date).getTime();
+            if (lastSend > now - 20) return;
+            lastSend = now;
+            Socket.send(dato);
+        }
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+    <style type="text/css">
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            display: none;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        
+        input:checked+.slider {
+            background-color: #2196F3;
+        }
+        
+        input:focus+.slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        
+        input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+        /* Rounded sliders */
+        
+        .slider.round {
+            border-radius: 34px;
+        }
+        
+        .slider.round:before {
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand js-scroll-trigger" href="#page-top">Basurero Inteligente</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link js-scroll-trigger" href="#">NodeMCUEsp8266</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link js-scroll-trigger" href="#">HC-SR04</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link js-scroll-trigger" href="#">Servo SG90</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <section class="jumbotron text-center bg-primary text-white">
+        <div class="container text-center">
+            <br>
+            <h1>Papelera Inteligente</h1>
+            <p class="lead ">Usando un dispositivo ESP8266, un servo y un par de sensores ultrasonicos, usted puede abrir y cerrar la papelera conectandose desde su celular ademas de poder abrir cada vez que alguien coloca la mano cerca de la papelera.
+            </p>
+            <p>
+                <a href="#" class="btn btn-primary my-2">PapeleraEnAccion</a>
+            </p>
+        </div>
+    </section>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+
+                <center>
+                    <h2>Panel de Control</h2>
+
+
+                    <label class="switch">
+                        <input type="checkbox" onclick="enviarDatos()" id="check">
+                        <span class="slider round"></span>
+                      </label><br>
+                    <span id="foco">APAGADO</span>
+
+                    <br>
+                    <h3>Estado de la papelera: </h3>
+                    <span id="estado"></span>
+                    <br><br><br><br>
+                    <span>Con el poder de NodeMCU ESP8266 WebSocket WebServer</span>
+                </center>
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+</html>
